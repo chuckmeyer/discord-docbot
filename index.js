@@ -94,16 +94,33 @@ async function handleInteractionCreate(interaction) {
 			return
 		}
 
-    console.log(response)
-
 		// Compile the matches into a Markdown formatted string
-		let reply = `Found ${response.nbHits} matches; here are the top 3:`
-		response.hits.forEach(hit => {
-      const URL = BASE_URL + hit.url
-			reply += `\n- [${hit.description}](${URL})`
-		})
+		let headingString = `I found ${response.nbHits} matches for *${query}*.`
+    if (response.nbHits.length <= 3) {
+      headingString += " Here's what I found:"
+    } else {
+      headingString += " Here's the top 3:"
+    }
 
-		await interaction.editReply(reply)
+    // Process the result set
+    const resultsString = response.hits
+      .reduce((accumulator, hit, index) => {
+        const url = BASE_URL + hit.url
+        const resultNumber = `\`${index + 1})\``
+        accumulator.push(`- [${hit.title}](${url})`)
+        return accumulator
+      }, [])
+      .join('\n')
+
+    console.log(resultsString)
+
+    await interaction.editReply({
+      embeds: [
+        new EmbedBuilder()
+          .setTitle('Search Results')
+          .setDescription(`${headingString}\n\n${resultsString}`),
+      ],
+    })
 	} catch (error) {
 		// Log any errors we run into
 		console.error(error)
