@@ -1,45 +1,32 @@
-const {  SlashCommandBuilder } = require('discord.js')
-const { Routes } = require('discord-api-types/v9')
-const { REST } = require('@discordjs/rest')
+const { REST, Routes } = require('discord.js')
 const { config } = require('../config.js')
 const path = require('path')
 const fs = require('fs')
 
 // Retrieve command definitions = require(files
 const loadCommands = async () => {
-  let commandsOut = []
+  const commands = []
 
-  const commandsPath = 'commands'
-  const commands = fs.readdirSync(commandsPath)
-  for await (const command of commands) {
-    const { data } = require(`../${commandsPath}/${command}`)
-    commandsOut.push(data)
-    console.log(data.name)
-    data.options.map((option) => {console.log(option.name)})
-  }
+  const foldersPath = path.join(__dirname, '../commands');
+  const commandFolders = fs.readdirSync(foldersPath); 
 
-  return commandsOut
-}
-
-
-function readFiles(dirname, onFileContent, onError) {
-  fs.readdir(dirname, function(err, filenames) {
-    if (err) {
-      onError(err);
-      return;
+  for (const folder of commandFolders) {
+    // Grab all the command files from the commands directory you created earlier
+    const commandsPath = path.join(foldersPath, folder);
+    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+    // Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
+    for (const file of commandFiles) {
+      const filePath = path.join(commandsPath, file);
+      const command = require(filePath);
+      if ('data' in command && 'execute' in command) {
+        commands.push(command.data.toJSON());
+      } else {
+        console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+      }
     }
-    filenames.forEach(function(filename) {
-      fs.readFile(dirname + filename, 'utf-8', function(err, content) {
-        if (err) {
-          onError(err);
-          return;
-        }
-        onFileContent(filename, content);
-      });
-    });
-  });
+  }
+  return commands
 }
-
 
 // Create a client for accessing the Discord REST API
 const DISCORD_REST_CLIENT = new REST({ version: '10' })
@@ -47,25 +34,19 @@ const DISCORD_REST_CLIENT = new REST({ version: '10' })
 
 async function registerCommands(guildID) {
   const commands = await loadCommands()
+
+  console.log(`Started refreshing ${commands.length} application (/) commands.`);
+
 	// Generate the API route for updating bot commands within this server.
 	const route = Routes.applicationGuildCommands(config.discord.clientId, guildID)
 
-	// Create an object representing our /search command for the Discord API.
-	const commandData = new SlashCommandBuilder()
-		.setName('search')
-		.setDescription('Search the Algolia docs!')
-		.addStringOption(option => {
-			return option
-				.setName('query')
-				.setDescription('The query to be searched')
-				.setRequired(true)
-		})
-		.toJSON()
-
-	// Send the command object to Discord
-	await DISCORD_REST_CLIENT.put(route, { body: [commandData] })
-
-	console.log('Successfully created the /search command!')
+  try {
+    // Send the command object to Discord
+    const data = await DISCORD_REST_CLIENT.put(route, { body: commands })
+		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 module.exports = { registerCommands }
