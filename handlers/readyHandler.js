@@ -1,7 +1,7 @@
-import { discordClient } from '../clients/discordClient.js'
-import { registerCommands } from '../commands/registerCommands.js'
+const { discordClient } = require('../clients/discordClient.js')
+const { registerCommands } = require('../register/registerCommands.js')
 
-export async function handleReady() {
+async function handleReady() {
 	// Get the collection of servers the bot is already in
 	const guilds = await discordClient.guilds.fetch()
 
@@ -18,3 +18,5 @@ export async function handleReady() {
 	}
 	console.log('Ready!')
 }
+
+module.exports = { handleReady }

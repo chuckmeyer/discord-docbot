@@ -1,11 +1,8 @@
-import {
-  EmbedBuilder,
-  InteractionType
-} from 'discord.js'
-import { algoliaClient } from '../clients/algoliaClient.js'
-import { config } from '../config.js'
+const { EmbedBuilder, InteractionType } = require('discord.js')
+const { algoliaClient } = require('../clients/algoliaClient.js')
+const { config } = require('../config.js')
 
-export async function handleInteractionCreate(interaction) {
+async function handleInteractionCreate(interaction) {
 	// Exit if it's a non-command interaction.
 	if ((interaction.type !== InteractionType.ApplicationCommand)) {
 		return
@@ -60,3 +57,5 @@ export async function handleInteractionCreate(interaction) {
     await interaction.editReply("Sorry, there was a problem.")
 	}
 }
+
+module.exports = { handleInteractionCreate }

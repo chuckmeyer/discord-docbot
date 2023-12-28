@@ -1,5 +1,7 @@
-import { registerCommands } from '../commands/registerCommands.js'
+const { registerCommands } = require('../register/registerCommands.js')
 
-export async function handleGuildCreate(guild) {
+async function handleGuildCreate(guild) {
 	await registerCommands(guild.id)
 }
+
+module.exports = { handleGuildCreate }
