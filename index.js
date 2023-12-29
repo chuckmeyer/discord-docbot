@@ -6,9 +6,9 @@ const { handleInteractionCreate } = require('./handlers/interactionCreateHandler
 const { loadCommands } = require('./register/loadCommands.js')
 const { Collection } = require('discord.js')
 
-discordClient.commands = new Collection()
+// Load all commands into our client
 const commands = loadCommands()
-
+discordClient.commands = new Collection()
 commands.map((command) => {
   discordClient.commands.set(command.data.name, command)
 })

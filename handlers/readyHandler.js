@@ -1,9 +1,7 @@
-const { discordClient } = require('../clients/discordClient.js')
 const { registerCommands } = require('../register/registerCommands.js')
 
-async function handleReady() {
-	// Get the collection of servers the bot is already in
-	const guilds = await discordClient.guilds.fetch()
+async function handleReady(client) {
+	const guilds = await client.guilds.fetch()
 
 	// Convert the guilds collection to an array of guild IDs
 	const guildIDs = Array.from(guilds.keys())
