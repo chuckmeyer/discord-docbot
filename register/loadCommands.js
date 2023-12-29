@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 
 // Retrieve command definitions = require(files
-const loadCommands = async () => {
+const loadCommands = () => {
   const commands = []
 
   const foldersPath = path.join(__dirname, '../commands')
@@ -17,7 +17,7 @@ const loadCommands = async () => {
       const filePath = path.join(commandsPath, file)
       const command = require(filePath)
       if ('data' in command && 'execute' in command) {
-        console.log(`Adding ${command.data.name} to commands...`)
+        console.log(`Adding ${command.data.name} at ${filePath.toString()} to commands...`)
         commands.push(command)
       } else {
         console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`)
