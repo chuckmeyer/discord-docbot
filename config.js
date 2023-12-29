@@ -1,6 +1,6 @@
-import 'dotenv/config'
+require("dotenv").config()
 
-export const config = {
+exports.config = {
     algolia: {
         appId: process.env.ALGOLIA_APPLICATION_ID,
         apiKey: process.env.ALGOLIA_API_KEY,

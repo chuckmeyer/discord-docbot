@@ -1,7 +1,3 @@
-import { config } from '../config.js'
-import {
-	Client,
-	GatewayIntentBits,
-} from 'discord.js'
+const { Client, GatewayIntentBits } = require('discord.js');
 
-export const discordClient = new Client({intents: [GatewayIntentBits.Guilds] })
+exports.discordClient = new Client({intents: [GatewayIntentBits.Guilds] })
