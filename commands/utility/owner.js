@@ -1,0 +1,13 @@
+const { Client, SlashCommandBuilder } = require('discord.js');
+
+module.exports = {
+	data: new SlashCommandBuilder()
+		.setName('owner')
+		.setDescription('Provides information about the guild owner.'),
+	async execute(interaction) {
+		// interaction.user is the object representing the User who ran the command
+		// interaction.member is the GuildMember object, which represents the user in the specific guild
+    guild_owner = await interaction.guild.fetchOwner()
+		await interaction.reply(`The owner of this server is: ${guild_owner}`);
+	},
+};
