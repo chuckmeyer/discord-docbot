@@ -1,0 +1,22 @@
+# fly.toml app configuration file generated for discord-docbot on 2025-02-26T16:16:10-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'discord-docbot'
+primary_region = 'ord'
+
+[build]
+
+[[services]]
+  internal_port = 3000
+  protocol = "tcp"
+
+  # Allow machines to run continuously
+  auto_start_machines = false
+  auto_stop_machines = false
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
